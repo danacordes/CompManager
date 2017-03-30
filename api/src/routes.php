@@ -1,7 +1,8 @@
 <?php
 // Routes
 
-include "routes/entries.php";
+include "routes/entry.php";
+include "routes/user.php";
 /*
 $app->get('/[{name}]', function ($request, $response, $args) {
 die(print_r($args, true));
