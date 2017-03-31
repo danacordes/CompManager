@@ -26,7 +26,6 @@ $capsule->bootEloquent();
 
 $container['db'] = function ($c) {
     return $capsule;
-
 /*
 //PDO impl
     $db = $c['settings']['db'];
@@ -36,4 +35,9 @@ $container['db'] = function ($c) {
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     return $pdo;
 */
+};
+
+//session helper registration
+$container['session'] = function ($c){
+  return new \SlimSession\Helper;
 };
