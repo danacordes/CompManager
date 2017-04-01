@@ -58,11 +58,14 @@ $app->group('/entry', function() use ($app) {
     $isCurrentUser = false;
     $currentUser = -1;
     $session = $this->session;
-    if(isset($session->user)){
+    //die(print_r(empty($session->user), true).'!');
+    if(!empty($session) && !empty($session->user)){
       $currentUser = $session->user['id'];
       if($currentUser === $userId){
         $isCurrentUser = true;
       }
+    } else {
+      return $response->withJSON(['error'=>'Anonymous cannot list entries.']);
     }
 
 
