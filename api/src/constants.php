@@ -1,0 +1,20 @@
+<?php
+
+$KEY_NAME = 'name';
+$KEY_PASSWORD = 'password';
+$KEY_EMAIL = 'email';
+
+$VOLUNTEER_TYPE_NONE      = -1;
+$VOLUNTEER_TYPE_ORGANIZER = 0;
+$VOLUNTEER_TYPE_ENTRANT   = 1;
+$VOLUNTEER_TYPE_JUDGE     = 2;
+$VOLUNTEER_TYPE_STEWARD   = 3; 
+
+$VOLUNTEER_TYPES = [ 
+  $VOLUNTEER_TYPE_ORGANIZER => 'Organizer',
+  $VOLUNTEER_TYPE_ENTRANT   => 'Entrant',
+  $VOLUNTEER_TYPE_JUDGE     => 'Judge',
+  $VOLUNTEER_TYPE_STEWARD   => 'Steward',
+];
+
+?>
