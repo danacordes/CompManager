@@ -20,21 +20,106 @@ $app->group('/entry', function() use ($app) {
   });
 
   $app->get('/listByCompetition', function ($request, $response, $args )use ($app){
+    global $VOLUNTEER_TYPE_ORGANIZER;
 
+    //confirm required attributes
     $competitionId = $request->getQueryParam('competitionId');
 
     if(empty($competitionId)){
       return $response->withJSON(['error'=>'competitionId required to list entries.']);
     }
 
+    //force to int
     $competitionId = intval($competitionId);
 
+    //ensure that the user is logged in
+    if(!User::isAuthenticated($this)){
+      return $response->withJSON(['error'=>'Anonymous cannot list entries.']);
+    }
+
+
+    //is this user an Organizer in this comp
+    $isCompetitionOrganizer = false;
+    $currentUserId = User::getCurrentUserId($this);
+    $roles = User::find($currentUserId)->roles->toArray();
+    foreach($roles as $role){
+
+      if(
+        $role['competition_id'] === $competitionId &&
+        $role['volunteer_type'] === $VOLUNTEER_TYPE_ORGANIZER
+      ){
+        $isCompetitionOrganizer = true;
+      }
+    }
+
+    if(!$isCompetitionOrganizer){
+      return $response->withJSON(['error'=>'Can only list entries if competition organizer.']);
+    }
+
     $result['entry'] = Entry::where([
-      'competition_id' => $competitionId
+      'competition_id' => $competitionId,
     ])->get();
 
     return $response->withJSON($result);
   });
+
+  $app->get('/listByCompetitionStyle', function ($request, $response, $args )use ($app){
+    global $VOLUNTEER_TYPE_ORGANIZER;
+
+    //confirm required attributes
+    $competitionId = $request->getQueryParam('competitionId');
+    $styleId = $request->getQueryParam('styleId');
+
+    if(empty($competitionId)){
+      return $response->withJSON(['error'=>'competitionId required to list entries.']);
+    }
+    if(empty($styleId)){
+      return $response->withJSON(['error'=>'styleId required to list entries.']);
+    }
+
+    //force to int
+    $competitionId = intval($competitionId);
+
+    //force to array
+    $styleIds = explode(',',$styleId);
+
+    //ensure that all are ints
+    array_walk($styleIds, function(&$style){ 
+      $style = intval($style); 
+    });
+
+    //remove id zero from the array, these were non-int numbers from the
+    //previous step
+    $styleIds = array_diff($styleIds, [0]);
+
+    //is this user an Organizer in this comp
+    $isCompetitionOrganizer = false;
+    $currentUserId = User::getCurrentUserId($this);
+    $roles = User::find($currentUserId)->roles->toArray();
+    foreach($roles as $role){
+
+      if(
+        $role['competition_id'] === $competitionId &&
+        $role['volunteer_type'] === $VOLUNTEER_TYPE_ORGANIZER
+      ){
+        $isCompetitionOrganizer = true;
+      }
+    }
+
+    if(!$isCompetitionOrganizer){
+      return $response->withJSON(['error'=>'Can only list entries if competition organizer.']);
+    }
+
+//die(print_r($styleIds, true));
+    $result['entry'] = Entry::where([
+      'competition_id' => $competitionId,
+    ])
+    ->whereIn('style_id', $styleIds)
+    ->get();
+
+    return $response->withJSON($result);
+  });
+
 
   $app->get('/listByCompetitionUser', function ($request, $response, $args )use ($app){
     global $VOLUNTEER_TYPE_ORGANIZER;
@@ -56,12 +141,13 @@ $app->group('/entry', function() use ($app) {
 
     //is this request for the currently logged in user
     $isCurrentUser = false;
-    $currentUser = -1;
-    $session = $this->session;
+    $currentUserId = -1;
+    //$session = $this->session;
     //die(print_r(empty($session->user), true).'!');
-    if(!empty($session) && !empty($session->user)){
-      $currentUser = $session->user['id'];
-      if($currentUser === $userId){
+    //die(print_r(User::isAuthenticated($this), true).'!');
+    if(User::isAuthenticated($this)){
+      $currentUserId = User::getCurrentUserId($this);
+      if($currentUserId === $userId){
         $isCurrentUser = true;
       }
     } else {
@@ -71,7 +157,7 @@ $app->group('/entry', function() use ($app) {
 
     //is this user an Organizer in this comp
     $isCompetitionOrganizer = false;
-    $roles = User::find($currentUser)->roles->toArray();
+    $roles = User::find($currentUserId)->roles->toArray();
     foreach($roles as $role){
 
       if(

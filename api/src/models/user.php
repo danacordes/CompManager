@@ -6,6 +6,22 @@ class User extends \Illuminate\Database\Eloquent\Model {
 
     protected $guarded = ['id'];
 
+    public function isAuthenticated($context){
+
+      $session = $context->session;
+      return (!empty($session) && !empty($session->user));
+
+    }
+
+    public function getCurrentUserId($context){
+
+      $session = $context->session;
+      if(User::isAuthenticated($context)){
+        return $session->user['id'];
+      }
+
+    }
+
     public function roles(){
     //public function roles($competitionId){
       //$competitionId = func_get_arg(0);
