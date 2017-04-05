@@ -1,0 +1,119 @@
+{
+	"variables": [],
+	"info": {
+		"name": "CompManager",
+		"_postman_id": "84647962-f485-1f8c-8240-8a88f9efad20",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "entry/list",
+			"request": {
+				"url": "http://beercomp.club/CompManager/api/public/entry/list",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "user/register",
+			"request": {
+				"url": "http://beercomp.club/CompManager/api/public/user/register",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Dana Cordes\",\n\t\"email\": \"dcordes@pudding.org\",\n\t\"password\": \"a\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "/logout",
+			"request": {
+				"url": "http://beercomp.club/CompManager/api/public/logout",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "/login",
+			"request": {
+				"url": "http://beercomp.club/CompManager/api/public/login",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "dcordes@pudding.org",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "email",
+							"value": "dcordes@gmail.com",
+							"type": "text",
+							"enabled": false
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "/validate",
+			"request": {
+				"url": "http://beercomp.club/CompManager/api/public/validate",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "entry/listByCompetitionUser",
+			"request": {
+				"url": "http://beercomp.club/CompManager/api/public/entry/listByCompetitionUser?userId=2&competitionId=1",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "entry/listByCompetition",
+			"request": {
+				"url": "http://beercomp.club/CompManager/api/public/entry/listByCompetition?competitionId=2",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
