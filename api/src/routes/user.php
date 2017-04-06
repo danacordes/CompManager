@@ -2,22 +2,6 @@
 
 $app->group('/user', function() use ($app) {
 
-  $app->get('/list', function ($request, $response, $args )use ($app){
-
-    $result = [];
-//die(print_r($this->get('db'), true));
-//die(print_r($this->db, true));
-    $result['user'] = User::all();
-/*
-    $stmt = $this->db->query('SELECT * FROM entries');
-    while($row = $stmt->fetch()){
-     $entries[] = $row; 
-    }
-*/
-
-    return $response->withJSON($result);
-  });
-
   $app->get('/get', function ($request, $response, $args )use ($app){
     
     $user_id = $request->getQueryParam('id');

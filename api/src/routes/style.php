@@ -1,8 +1,10 @@
 <?php
 
+use Illuminate\Database\Capsule\Manager as DB;
+
 $app->group('/style', function() use ($app) {
 
-  $app->get('/listByCompetition', function ($request, $response, $args )use ($app){
+  $app->get('/listCountByCompetition', function ($request, $response, $args )use ($app){
     global $VOLUNTEER_TYPE_ORGANIZER;
 
     //confirm required attributes
@@ -38,9 +40,27 @@ $app->group('/style', function() use ($app) {
       return $response->withJSON(['error'=>'Can only list entries if competition organizer.']);
     }
 
-    $result['style'] = Style::all();//where([
-//      'competition_id' => $competitionId,
-//    ])->get();
+    //get the style entry counts for the comp
+    $entryCountsRaw = DB::select("SELECT style_id, count(*) as count FROM entry WHERE competition_id = $competitionId GROUP BY style_id");
+
+    //convert them to a usable data structure
+    $entryCounts = [];
+    foreach($entryCountsRaw as $count){
+      $entryCounts[$count->style_id] = $count->count;
+    }
+    unset($entryCountsRaw);
+
+    //list all the styles in the competition
+    $competition = Competition::find($competitionId);
+    $competitionStyles = $competition->styles;
+
+    //iterate through them, adding in the count
+    foreach($competitionStyles as $style){
+      $count = $entryCounts[$style->id];
+      $style->count = isset($count)?$count:0;
+    }
+
+    $result['style'] = $competitionStyles;
 
     return $response->withJSON($result);
   });
