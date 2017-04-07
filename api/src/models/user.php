@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Database\Capsule\Manager as DB;
+
 class User extends \Illuminate\Database\Eloquent\Model {
 
     protected $table = 'user';
@@ -20,6 +22,14 @@ class User extends \Illuminate\Database\Eloquent\Model {
         return $session->user['id'];
       }
 
+    }
+
+    public function isEmailUnused($email){
+
+      return 0 === DB::table('user')
+        ->where('email', $email)
+        ->count();
+      
     }
 
     public function roles(){
@@ -58,8 +68,6 @@ class User extends \Illuminate\Database\Eloquent\Model {
 
       $this->find();
 
-      
-      
     }
 
 }

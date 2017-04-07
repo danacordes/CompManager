@@ -17,7 +17,8 @@
         "slim/php-view": "^2.0",
         "monolog/monolog": "^1.17",
         "illuminate/database": "~5.1",
-        "bryanjhv/slim-session": "~3.0"
+        "bryanjhv/slim-session": "~3.0",
+        "davidepastore/slim-validation": "^0.5.0"
     },
     "require-dev": {
         "phpunit/phpunit": ">=4.8 < 6.0"
