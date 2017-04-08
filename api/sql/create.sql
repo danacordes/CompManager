@@ -27,10 +27,12 @@ CREATE TABLE IF NOT EXISTS `beercomp`.`user` (
   `address_2` VARCHAR(255) NULL,
   `city` VARCHAR(255) NULL,
   `state` VARCHAR(45) NULL,
+  `zip` VARCHAR(45) NULL,
   `updated_at` TIMESTAMP NULL,
   `created_at` TIMESTAMP NULL,
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
-  PRIMARY KEY (`id`))
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC))
 ENGINE = InnoDB;
 
 
@@ -84,6 +86,8 @@ CREATE TABLE IF NOT EXISTS `beercomp`.`style` (
   `description` TEXT NULL,
   `created_at` TIMESTAMP NULL,
   `updated_at` TIMESTAMP NULL,
+  `parent_style_id` INT NULL DEFAULT 0,
+  `identifier` VARCHAR(45) NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
@@ -171,23 +175,14 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `beercomp`.`volunteer_types`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `beercomp`.`volunteer_types` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(255) NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `beercomp`.`volunteer`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `beercomp`.`volunteer` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
   `competition_id` INT NOT NULL,
-  `volunteer_type_id` INT NOT NULL,
+  `created_at` TIMESTAMP NULL,
+  `updated_at` TIMESTAMP NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
@@ -229,7 +224,20 @@ CREATE TABLE IF NOT EXISTS `beercomp`.`styles_competitions` (
 ENGINE = InnoDB;
 
 
+-- -----------------------------------------------------
+-- Table `beercomp`.`competition_role`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `beercomp`.`competition_role` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `competition_id` INT NOT NULL,
+  `volunteer_type` INT NOT NULL,
+  `created_at` TIMESTAMP NULL,
+  `updated_at` TIMESTAMP NULL,
+  PRIMARY KEY (`id`, `user_id`, `competition_id`, `volunteer_type`))
+ENGINE = InnoDB;
+
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
-
