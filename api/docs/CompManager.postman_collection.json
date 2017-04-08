@@ -107,7 +107,29 @@
 		{
 			"name": "entry/listByCompetition",
 			"request": {
-				"url": "http://beercomp.club/CompManager/api/public/entry/listByCompetition?competitionId=2",
+				"url": "http://beercomp.club/CompManager/api/public/entry/listByCompetition?competitionId=1",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "entry/listByCompetitionStyle",
+			"request": {
+				"url": "http://beercomp.club/CompManager/api/public/entry/listByCompetitionStyle?competitionId=1&styleId=1,2,3,a",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "style/listCountByCompetition",
+			"request": {
+				"url": "http://beercomp.club/CompManager/api/public/style/listCountByCompetition?competitionId=1",
 				"method": "GET",
 				"header": [],
 				"body": {},
