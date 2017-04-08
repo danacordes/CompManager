@@ -20,7 +20,6 @@ $app->group('/entry', function() use ($app) {
   });
 
   $app->get('/listByCompetition', function ($request, $response, $args )use ($app){
-    global $VOLUNTEER_TYPE_ORGANIZER;
 
     //confirm required attributes
     $competitionId = $request->getQueryParam('competitionId');
@@ -39,18 +38,8 @@ $app->group('/entry', function() use ($app) {
 
 
     //is this user an Organizer in this comp
-    $isCompetitionOrganizer = false;
     $currentUserId = User::getCurrentUserId($this);
-    $roles = User::find($currentUserId)->roles->toArray();
-    foreach($roles as $role){
-
-      if(
-        $role['competition_id'] === $competitionId &&
-        $role['volunteer_type'] === $VOLUNTEER_TYPE_ORGANIZER
-      ){
-        $isCompetitionOrganizer = true;
-      }
-    }
+    $isCompetitionOrganizer = User::isOrganizer($currentUserId, $competitionId);
 
     if(!$isCompetitionOrganizer){
       return $response->withJSON(['error'=>'Can only list entries if competition organizer.']);
@@ -64,7 +53,6 @@ $app->group('/entry', function() use ($app) {
   });
 
   $app->get('/listByCompetitionStyle', function ($request, $response, $args )use ($app){
-    global $VOLUNTEER_TYPE_ORGANIZER;
 
     //confirm required attributes
     $competitionId = $request->getQueryParam('competitionId');
@@ -93,19 +81,8 @@ $app->group('/entry', function() use ($app) {
     $styleIds = array_diff($styleIds, [0]);
 
     //is this user an Organizer in this comp
-    $isCompetitionOrganizer = false;
     $currentUserId = User::getCurrentUserId($this);
-    $roles = User::find($currentUserId)->roles->toArray();
-    foreach($roles as $role){
-
-      if(
-        $role['competition_id'] === $competitionId &&
-        $role['volunteer_type'] === $VOLUNTEER_TYPE_ORGANIZER
-      ){
-        $isCompetitionOrganizer = true;
-      }
-    }
-
+    $isCompetitionOrganizer = User::isOrganizer($currentUserId, $competitionId);
     if(!$isCompetitionOrganizer){
       return $response->withJSON(['error'=>'Can only list entries if competition organizer.']);
     }
@@ -122,7 +99,6 @@ $app->group('/entry', function() use ($app) {
 
 
   $app->get('/listByCompetitionUser', function ($request, $response, $args )use ($app){
-    global $VOLUNTEER_TYPE_ORGANIZER;
 
     //confirm required attributes
     $userId = $request->getQueryParam('userId');
@@ -156,17 +132,8 @@ $app->group('/entry', function() use ($app) {
 
 
     //is this user an Organizer in this comp
-    $isCompetitionOrganizer = false;
-    $roles = User::find($currentUserId)->roles->toArray();
-    foreach($roles as $role){
-
-      if(
-        $role['competition_id'] === $competitionId &&
-        $role['volunteer_type'] === $VOLUNTEER_TYPE_ORGANIZER
-      ){
-        $isCompetitionOrganizer = true;
-      }
-    }
+    $currentUserId = User::getCurrentUserId($this);
+    $isCompetitionOrganizer = User::isOrganizer($currentUserId, $competitionId);
 
     //die(print_r([$currentUser, $isCompetitionOrganizer, $isCurrentUser],true));
 

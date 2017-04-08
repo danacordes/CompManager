@@ -31,6 +31,77 @@ class User extends \Illuminate\Database\Eloquent\Model {
         ->count();
       
     }
+     
+    /*
+     * @param $userId 
+     * @param $comptitionId
+     */
+    public function isSteward($userId, $competitionId){
+
+      return in_array($VOLUNTEER_TYPE_STEWARD, User::getUserRoles($userId, $competitionId));
+
+    }
+    
+
+
+    /*
+     * @param $userId 
+     * @param $comptitionId
+     */
+    public function isEntrant($userId, $competitionId){
+
+      return in_array($VOLUNTEER_TYPE_ENTRANT, User::getUserRoles($userId, $competitionId));
+
+    }
+    
+
+    /*
+     * @param $userId 
+     * @param $comptitionId
+     */
+    public function isJudge($userId, $competitionId){
+
+      return in_array($VOLUNTEER_TYPE_JUDGE, User::getUserRoles($userId, $competitionId));
+    }
+    
+
+    /*
+     * @param $userId 
+     * @param $comptitionId
+     */
+    public function isOrganizer($userId, $competitionId){
+
+      return in_array($VOLUNTEER_TYPE_ORGANIZER, User::getUserRoles($userId, $competitionId));
+    }
+    
+    /*
+     * @param $userId 
+     * @param $comptitionId
+     */
+
+    public function getUserRoles($userId, $competitionId){
+      if(empty($userId) || empty($competitionId)){
+        return [];
+      }
+
+      //pull user roles for competition
+      $roles = DB::table('competition_role')
+        ->distinct()
+        ->where([
+          'competition_id'  => $competitionId,
+          'user_id'         => $userId
+        ])
+        ->get(['volunteer_type']);
+
+      $result = [];
+      foreach($roles as $role){
+        $result[] = $role->volunteer_type;
+      }
+     // die(print_r($result,true));
+
+      return $result;
+
+    }
 
     public function roles(){
     //public function roles($competitionId){
