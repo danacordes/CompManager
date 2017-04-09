@@ -200,16 +200,16 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `beercomp`.`organizations_users`
+-- Table `beercomp`.`organizations_roles`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `beercomp`.`organizations_users` (
+CREATE TABLE IF NOT EXISTS `beercomp`.`organizations_roles` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `organization_id` INT NOT NULL,
   `user_id` INT NOT NULL,
-  `role` VARCHAR(45) NOT NULL COMMENT 'admin, entrant, judge, steward, etc\n',
+  `role_type` INT NOT NULL COMMENT 'admin, entrant, judge, steward, etc\n',
   `created_at` TIMESTAMP NULL,
   `update_at` TIMESTAMP NULL,
-  PRIMARY KEY (`id`, `organization_id`, `user_id`, `role`))
+  PRIMARY KEY (`id`, `organization_id`, `user_id`, `role_type`))
 ENGINE = InnoDB;
 
 
@@ -225,16 +225,16 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `beercomp`.`competition_role`
+-- Table `beercomp`.`competitions_roles`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `beercomp`.`competition_role` (
+CREATE TABLE IF NOT EXISTS `beercomp`.`competitions_roles` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
   `competition_id` INT NOT NULL,
-  `volunteer_type` INT NOT NULL,
+  `role_type` INT NOT NULL,
   `created_at` TIMESTAMP NULL,
   `updated_at` TIMESTAMP NULL,
-  PRIMARY KEY (`id`, `user_id`, `competition_id`, `volunteer_type`))
+  PRIMARY KEY (`id`, `user_id`, `competition_id`, `role_type`))
 ENGINE = InnoDB;
 
 
