@@ -37,20 +37,18 @@ class User extends \Illuminate\Database\Eloquent\Model {
      * @param $comptitionId
      */
     public function isSteward($userId, $competitionId){
-
-      return in_array($VOLUNTEER_TYPE_STEWARD, User::getUserRoles($userId, $competitionId));
+      global $COMPETITION_USER_TYPE_STEWARD;
+      return User::isCompetitionRole($userId, $competitionId, $COMPETITION_USER_TYPE_STEWARD);
 
     }
-    
-
 
     /*
      * @param $userId 
      * @param $comptitionId
      */
     public function isEntrant($userId, $competitionId){
-
-      return in_array($VOLUNTEER_TYPE_ENTRANT, User::getUserRoles($userId, $competitionId));
+      global $COMPETITION_USER_TYPE_ENTRANT;
+      return User::isCompetitionRole($userId, $competitionId, $COMPETITION_USER_TYPE_ENTRANT);
 
     }
     
@@ -60,8 +58,9 @@ class User extends \Illuminate\Database\Eloquent\Model {
      * @param $comptitionId
      */
     public function isJudge($userId, $competitionId){
+      global $COMPETITION_USER_TYPE_JUDGE;
+      return User::isCompetitionRole($userId, $competitionId, $COMPETITION_USER_TYPE_JUDGE);
 
-      return in_array($VOLUNTEER_TYPE_JUDGE, User::getUserRoles($userId, $competitionId));
     }
     
 
@@ -69,9 +68,10 @@ class User extends \Illuminate\Database\Eloquent\Model {
      * @param $userId 
      * @param $comptitionId
      */
-    public function isOrganizer($userId, $competitionId){
+    public function isCompetitionOrganizer($userId, $competitionId){
+      global $COMPETITION_USER_TYPE_ORGANIZER;
+      return User::isCompetitionRole($userId, $competitionId, $COMPETITION_USER_TYPE_ORGANIZER);
 
-      return in_array($VOLUNTEER_TYPE_ORGANIZER, User::getUserRoles($userId, $competitionId));
     }
     
     /*
@@ -79,31 +79,80 @@ class User extends \Illuminate\Database\Eloquent\Model {
      * @param $comptitionId
      */
 
-    public function getUserRoles($userId, $competitionId){
+    public function isCompetitionRole($userId, $competitionId, $role_type){
+
+      return in_array($role_type, User::getCompetitionRoles($userId, $competitionId));
+
+    }
+    
+    public function getCompetitionRoles($userId, $competitionId){
       if(empty($userId) || empty($competitionId)){
         return [];
       }
 
       //pull user roles for competition
-      $roles = DB::table('competition_role')
+      $roles = DB::table('competitions_roles')
         ->distinct()
         ->where([
           'competition_id'  => $competitionId,
           'user_id'         => $userId
         ])
-        ->get(['volunteer_type']);
+        ->get(['role_type']);
 
       $result = [];
       foreach($roles as $role){
-        $result[] = $role->volunteer_type;
+        $result[] = $role->role_type;
       }
      // die(print_r($result,true));
 
       return $result;
 
     }
+ 
+    public function isOrganizationMember($userId, $organizationId){
+      global $ORGANIZATION_USER_TYPE_MEMBER;
+      return User::isOrganizationRole($userId, $organizationId, $ORGANIZATION_USER_TYPE_MEMBER);
 
-    public function roles(){
+    }
+
+    public function isOrganizationOrganizer($userId, $organizationId){
+      global $ORGANIZATION_USER_TYPE_ORGANIZER;
+      return User::isOrganizationRole($userId, $organizationId, $ORGANIZATION_USER_TYPE_ORGANIZER);
+
+    }
+    
+    public function isOrganizationRole($userId, $organizationId, $role_type){
+
+      return in_array($role_type, User::getOrganizationRoles($userId, $organizationId));
+
+    }
+
+    public function getOrganizationRoles($userId, $organizationId){
+      if(empty($userId) || empty($organizationId)){
+        return [];
+      }
+
+      //pull user roles for organization 
+      $roles = DB::table('organizations_roles')
+        ->distinct()
+        ->where([
+          'organization_id'  => $organizationId,
+          'user_id'         => $userId
+        ])
+        ->get(['role_type']);
+
+      $result = [];
+      foreach($roles as $role){
+        $result[] = $role->role_type;
+      }
+      //die(print_r($result,true));
+
+      return $result;
+
+    }
+
+
+    public function competitionRoles(){
     //public function roles($competitionId){
       //$competitionId = func_get_arg(0);
       //print_r($competitionId);
@@ -116,9 +165,28 @@ class User extends \Illuminate\Database\Eloquent\Model {
       //    ->where(['role.competition_id' => $competitionId]);
       //} else {
       //  die(print_r($this->hasMany('Role'),true));
-        return $this->hasMany('Role');
+        return $this->hasMany('CompetitionRole');
       //}
 
+    }
+private function logSql(){
+    DB::listen(function($sql, $bindings, $time){
+      var_dump('dumping');
+      var_dump($sql);
+      var_dump($bindings);
+      var_dump($time);
+      die('sql dumped');
+    });
+}
+
+
+    public function organizationRoles(){
+      
+      //$result = $this->hasMany('OrganizationRole')->where('organization_id',$organizationId)->get()->toArray();
+      //die(print_r($result,true));
+      //die(print_r($this->hasMany('OrganizationRole')->toSql()));
+
+      return $this->hasMany('OrganizationRole');
     }
 
     public function competitions(){
@@ -129,12 +197,12 @@ class User extends \Illuminate\Database\Eloquent\Model {
     }
 
     public function getRoles($userId, $competitionId){
-      global $VOLUNTEER_TYPE_NONE;
+      global $COMPETITION_USER_TYPE_NONE;
 //die(print_r([$userId, $competitionId], true));
 
       if(empty($competitionId) || empty($userId)){
         //TODO proper error handling
-        return $VOLUNTEER_TYPE_NONE;
+        return $COMPETITION_USER_TYPE_NONE;
       }
 
       $this->find();

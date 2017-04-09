@@ -5,7 +5,6 @@ use Illuminate\Database\Capsule\Manager as DB;
 $app->group('/style', function() use ($app) {
 
   $app->get('/listCountByCompetition', function ($request, $response, $args )use ($app){
-    global $VOLUNTEER_TYPE_ORGANIZER;
 
     //confirm required attributes
     $competitionId = $request->getQueryParam('competitionId');
@@ -23,18 +22,8 @@ $app->group('/style', function() use ($app) {
     }
 
     //is this user an Organizer in this comp
-    $isCompetitionOrganizer = false;
     $currentUserId = User::getCurrentUserId($this);
-    $roles = User::find($currentUserId)->roles->toArray();
-    foreach($roles as $role){
-
-      if(
-        $role['competition_id'] === $competitionId &&
-        $role['volunteer_type'] === $VOLUNTEER_TYPE_ORGANIZER
-      ){
-        $isCompetitionOrganizer = true;
-      }
-    }
+    $isCompetitionOrganizer = User::isOrganizer($currentUserId, $competitionId);
 
     if(!$isCompetitionOrganizer){
       return $response->withJSON(['error'=>'Can only list entries if competition organizer.']);
