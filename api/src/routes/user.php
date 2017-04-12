@@ -1,8 +1,7 @@
 <?php
 
-use Respect\Validation\Validator as v;
-
 $app->group('/user', function() use ($app) {
+  global $VALIDATORS;
 
   $app->get('/get', function ($request, $response, $args )use ($app){
     
@@ -21,27 +20,18 @@ $app->group('/user', function() use ($app) {
 
   });
 
-  $passwordValidator  = v::length(6, 90);
-  $emailValidator     = v::email();
-  $nameValidator      = v::length(6, 255);
-  $clubValidator      = v::optional(v::length(1, 255));
-  $addressValidator   = v::optional(v::length(1, 255));
-  $stateValidator     = v::optional(v::length(1, 5));
-  $ids                = v::optional(v::intVal());
-  $boolean            = v::optional(v::intVal()->max(1)->min(0));
-
   $registerValidator = array(
-    'password'        => $passwordValidator,
-    'email'           => $emailValidator,
-    'name'            => $nameValidator,
-    'club'            => $clubValidator,
-    'address_1'       => $addressValidator,
-    'address_2'       => $addressValidator,
-    'city'            => $addressValidator,
-    'state'           => $stateValidator,
-    'zip'             => $stateValidator,
-    'competition_id'  => $ids,
-    'organization_id' => $ids,
+    'password'        => $VALIDATORS['password'],
+    'email'           => $VALIDATORS['email'],
+    'name'            => $VALIDATORS['name'],
+    'club'            => $VALIDATORS['club'],
+    'address_1'       => $VALIDATORS['address'],
+    'address_2'       => $VALIDATORS['address'],
+    'city'            => $VALIDATORS['address'],
+    'state'           => $VALIDATORS['state'],
+    'zip'             => $VALIDATORS['state'],
+    'competition_id'  => $VALIDATORS['id'],
+    'organization_id' => $VALIDATORS['id'],
    // 'role_types'      => $ids,
   );
 
