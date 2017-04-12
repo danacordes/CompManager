@@ -8,6 +8,64 @@ class User extends \Illuminate\Database\Eloquent\Model {
 
     protected $guarded = ['id'];
 
+    public function filterFields($model){
+      if(isset($model->password)){
+        unset($model->password);
+      }
+      return $model;
+    }
+
+    public function canReadUserInfo($context, $targetUserId){
+      global $COMPETITION_USER_TYPE_ORGANIZER, $ORGANIZATION_USER_TYPE_ORGANIZER; 
+      $currentUserId = User::getCurrentUserId($context);
+
+      //get a list of the comps that the user has Organizer on
+      $currentUserOrganizerOfComps = DB::table('competitions_roles')
+        ->where([
+          'user_id'   => $currentUserId,
+          'role_type' => $COMPETITION_USER_TYPE_ORGANIZER
+        ])
+        ->get(['competition_id'])
+        ->toArray();
+        //->toSQL();
+      /*
+      array_map(function($comp){
+        //die(print_r($comp->competition_id, true));
+        //return $comp->competition_id;
+        $comps[] = $comp->competition_id;
+      },$currentUserOrganizerOfComps);
+      array_walk($currentUserOrganizerOfComps, function(&$comp){
+        //die(print_r($comp->competition_id, true));
+        $comps[] = $comp->competition_id;
+        $comps[] = ;
+      });
+       */
+      //get the results into a flat array
+      $comps = [];
+      foreach($currentUserOrganizerOfComps as $comp){
+        $comps[] = $comp->competition_id;
+      }
+      $currentUserOrganizerOfComps = $comps;
+      unset($comps);
+
+      //@TODO query competitions_roles to get a list of all users associated
+      //with a comp(s)
+      //@TODO query organizations_roles to get a list of orgs that the user has
+      //Organizer on
+      //@TODO question the organizations_roles to get a list of all users
+      //associated with org(s)
+      //@TODO merge those two user arrays
+      //@TODO ensure that the userId being requested is in that list, otherwise
+      //error
+
+      die(print_r($currentUserOrganizerOfComps, true));
+      
+
+      
+      
+      return false;
+    }
+
     public function isAuthenticated($context){
 
       $session = $context->session;

@@ -3,14 +3,29 @@
 $app->group('/user', function() use ($app) {
   global $VALIDATORS;
 
-  $app->get('/get', function ($request, $response, $args )use ($app){
+  $getUserValidator = [
+    'user_id' => $VALIDATORS['id'],
+  ];
+  $app->get('/getUser', function ($request, $response, $args )use ($app){
     
-    $user_id = $request->getQueryParam('id');
+    if($request->getAttribute('has_errors')){
+      return $response->withJSON(['error' => $request->getAttribute('errors')]);
+    }
 
-    if(!empty($user_id)){
-      $user = User::find($user_id);
-      if(!empty($user)){
-        $result['user'] = $user;
+    $userId = (int)$request->getQueryParam('user_id');
+
+    if(isset($userId)){
+      if(
+        $userId == User::getCurrentUserId($this) || //can request yourself
+       User::canReadUserInfo($this, $userId) 
+      ){
+//die(print_r(User::getCurrentUserId($this), true));
+        $user = User::find($userId);
+        if(!empty($user)){
+          $result['user'] = User::filterFields($user);
+        }
+      } else {
+        return $response->withJSON(['error' => 'You lack the permissions needed to request this user info.']);
       }
     }
 
@@ -18,7 +33,7 @@ $app->group('/user', function() use ($app) {
       return $response->withJSON($result);
     }
 
-  });
+  })->add(new \DavidePastore\Slim\Validation\Validation($getUserValidator));
 
   $registerValidator = array(
     'password'        => $VALIDATORS['password'],
@@ -30,8 +45,8 @@ $app->group('/user', function() use ($app) {
     'city'            => $VALIDATORS['address'],
     'state'           => $VALIDATORS['state'],
     'zip'             => $VALIDATORS['state'],
-    'competition_id'  => $VALIDATORS['id'],
-    'organization_id' => $VALIDATORS['id'],
+    'competition_id'  => $VALIDATORS['opt-id'],
+    'organization_id' => $VALIDATORS['opt-id'],
    // 'role_types'      => $ids,
   );
 
