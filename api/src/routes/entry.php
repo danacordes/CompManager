@@ -1,23 +1,7 @@
 <?php
 
 $app->group('/entry', function() use ($app) {
-
-  $app->get('/list', function ($request, $response, $args )use ($app){
-
-    $result = [];
-//die(print_r($this->get('db'), true));
-//die(print_r($this->db, true));
-    //$entries = $this->get('db')->table('entries')->find(1);
-    $result['entry'] = Entry::all();
-/*
-    $stmt = $this->db->query('SELECT * FROM entries');
-    while($row = $stmt->fetch()){
-     $entries[] = $row; 
-    }
-*/
-
-    return $response->withJSON($result);
-  });
+  global $VALIDATORS;
 
   $app->get('/listByCompetition', function ($request, $response, $args )use ($app){
 
@@ -39,6 +23,7 @@ $app->group('/entry', function() use ($app) {
 
     //is this user an Organizer in this comp
     $currentUserId = User::getCurrentUserId($this);
+    die(print_r(User::find($currentUserId)->organizationRoles()->get()->toArray(), true));;
     $isCompetitionOrganizer = User::isOrganizer($currentUserId, $competitionId);
 
     if(!$isCompetitionOrganizer){
@@ -115,7 +100,6 @@ $app->group('/entry', function() use ($app) {
     $userId = intval($userId);
     $competitionId = intval($competitionId);
 
-    //is this request for the currently logged in user
     $isCurrentUser = false;
     $currentUserId = -1;
     //$session = $this->session;
@@ -152,5 +136,65 @@ $app->group('/entry', function() use ($app) {
     return $response->withJSON($result);
   });
 
+
+  $registerEntryValidator = array(
+    'competition_id'  => $VALIDATORS['id'],
+    'style_id'        => $VALIDATORS['id'],
+    'name'            => $VALIDATORS['name'],
+  );
+
+  $app->post('/register', function ($request, $response, $args )use ($app){
+    //confirm auth
+    //confirm user is member of compeititon, if not, add them as entrant
+    global $COMPETITION_USER_TYPES;
+
+    if($request->getAttribute('has_errors')){
+      return $response->withJSON(['error' => $request->getAttribute('errors')]);
+    }
+
+    if(!User::isAuthenticated($this)){
+      return $response->withJSON(['error' => "Can only add entries if logged in."]);
+    }
+
+    $params = $request->getParsedBody();
+    $entryData = [];
+
+    //required header fields
+    $entryData['user_id']         = User::getCurrentUserId($this); 
+    $entryData['competition_id']  = (int)$params['competition_id']; 
+    $entryData['style_id']        = (int)$params['style_id']; 
+    $entryData['name']            = $params['name']; 
+
+    /*
+    if(!User::isEmailUnused($entryData['email'])){
+      return $response->withJSON(['error' => "The email address '{$entryData['email']}' has already been registered.  If you've had one to many and can't remember you password, please hit the 'Reset Password' button."]);
+    }
+     */
+    
+    //create the entry 
+    $entry = Entry::create($entryData);
+    if(!empty($entry)){
+      $result['entry'] = [$entry];
+    }
+ 
+    //TODO get style_type_id based on style_id
+    //TODO get entry_attributes for style_type
+    //TODO add params for required fields, error if missing
+    //TODO add params for optional fields, if present
+    //required fields
+    //optional fields
+    //if(!empty($params['zip']))        $entryData['zip']        = $params['zip']; 
+
+
+    //TODO: validate advanced (EAV) values and build create objects
+    //TODO: execute creates
+    //TODO: return new Entry
+
+    return $response->withJSON($result);
+    
+  })->add(new \DavidePastore\Slim\Validation\Validation($registerEntryValidator));
+
+
 });
 ?>
+<?php

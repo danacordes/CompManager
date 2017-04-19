@@ -57,6 +57,9 @@ class User extends \Illuminate\Database\Eloquent\Model {
       //@TODO merge those two user arrays
       //@TODO ensure that the userId being requested is in that list, otherwise
       //error
+      //@TODO refactor all this to a function that will produce that list of
+      //permitted userIds for easier future reuse.  
+      //@TODO refactor to take a userId, not a $context
 
       die(print_r($currentUserOrganizerOfComps, true));
       
