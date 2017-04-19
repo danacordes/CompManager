@@ -82,7 +82,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `beercomp`.`style` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL,
-  `type_id` INT NOT NULL,
+  `style_type_id` INT NOT NULL,
   `description` TEXT NULL,
   `created_at` TIMESTAMP NULL,
   `updated_at` TIMESTAMP NULL,
@@ -120,16 +120,6 @@ CREATE TABLE IF NOT EXISTS `beercomp`.`round` (
   `location_id` INT NOT NULL,
   `created_at` TIMESTAMP NULL,
   `updated_at` TIMESTAMP NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `beercomp`.`entry_types`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `beercomp`.`entry_types` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(255) NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
@@ -235,6 +225,46 @@ CREATE TABLE IF NOT EXISTS `beercomp`.`competitions_roles` (
   `created_at` TIMESTAMP NULL,
   `updated_at` TIMESTAMP NULL,
   PRIMARY KEY (`id`, `user_id`, `competition_id`, `role_type`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `beercomp`.`entry_attributes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `beercomp`.`entry_attributes` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `style_type_id` INT NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `field_name` VARCHAR(45) NOT NULL,
+  `is_required` TINYINT NOT NULL,
+  `created_at` TIMESTAMP NULL,
+  `updated_at` TIMESTAMP NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `beercomp`.`entry_values`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `beercomp`.`entry_values` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `attribute_id` INT NOT NULL,
+  `value` VARCHAR(255) NULL,
+  `created_at` TIMESTAMP NULL,
+  `updated_at` TIMESTAMP NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `beercomp`.`style_type`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `beercomp`.`style_type` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NOT NULL,
+  `created_at` TIMESTAMP NULL,
+  `updated_at` TIMESTAMP NULL,
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 

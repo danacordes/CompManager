@@ -136,6 +136,17 @@
 				"description": ""
 			},
 			"response": []
+		},
+		{
+			"name": "user/getUser",
+			"request": {
+				"url": "http://beercomp.club/CompManager/api/public/user/getUser?user_id=2",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
 		}
 	]
 }
